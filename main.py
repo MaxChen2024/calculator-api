@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, status, HTTPException
 import math
 
 app = FastAPI()
@@ -17,7 +17,7 @@ def read_root():
 
 ## Addition
 @app.get("/add/{a}/{b}", status_code=200)
-def add(a: float, b: float):
+def add(a: str, b: str):
     """
     Add two numbers together.
     
@@ -41,7 +41,7 @@ def add(a: float, b: float):
 
 
 @app.get("/subtract/{a}/{b}", status_code=200)
-def add(a: float, b: float):
+def subtract(a: str, b: str):
     """
     Subtract number a by b.
     
@@ -63,7 +63,7 @@ def add(a: float, b: float):
 
 
 @app.get("/multiply/{a}/{b}", status_code=200)
-def add(a: float, b: float):
+def multiply(a: str, b: str):
     """
     Multiply two numbers together.
     
@@ -85,7 +85,7 @@ def add(a: float, b: float):
 
 
 @app.get("/divide/{a}/{b}", status_code=200)
-def add(a: float, b: float):
+def divide(a: str, b: str):
     """
     Divide number a by b.
     
@@ -106,9 +106,9 @@ def add(a: float, b: float):
     try:
         result = a / b
     except ZeroDivisionError:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Cannot divide by zero")
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Cannot divide by zero, second input (b) cannot be zero")
 
-    return {"result": a / b}
+    return {"result": result}
 
 
 ####################
@@ -116,13 +116,13 @@ def add(a: float, b: float):
 ####################
 
 @app.get("/power/{a}/{b}", status_code=200)
-def add(a: float, b: float):
+def power(a: str, b: str):
     """
-    Divide number a by b.
+    Calculate a to the power of b
     
     Parameters:
-    - a: First number
-    - b: Second number
+    - a: Base number
+    - b: Exponent power
     
     Returns:
     - JSON object with the result
@@ -137,9 +137,9 @@ def add(a: float, b: float):
     return {"result": a ** b}
 
 @app.get("/sqrt/{a}", status_code=200)
-def add(a: float):
+def sqrt(a: str):
     """
-    Square root number a.
+    Calculates the square root of a number
     
     Parameters:
     - a: First number
@@ -147,14 +147,26 @@ def add(a: float):
     Returns:
     - JSON object with the result
     """
-    return {"result": math.sqrt(a)}
+    try:
+        a = float(a)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Input must be a valid number")
+
+    try:
+        sqrt_a = math.sqrt(a)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Cannot take the square root of a negative number")
 
 
 
-@app.get("/add-3/{a}/{b}/{c}", status_code=200)
-def add(a: float, b: float, c: float):
+    return {"result": sqrt_a}
+
+
+
+@app.get("/add_3/{a}/{b}/{c}", status_code=200)
+def add_3(a: str, b: str, c: str):
     """
-    Square root number a.
+    Adds 3 numbers together
     
     Parameters:
     - a: First number
@@ -162,4 +174,12 @@ def add(a: float, b: float, c: float):
     Returns:
     - JSON object with the result
     """
+
+    try:
+        a = float(a)
+        b = float(b)
+        c = float(c)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="'a', 'b', and 'c' must all be valid numbers")
+
     return {"result": a + b + c}
